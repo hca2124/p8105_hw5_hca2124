@@ -66,6 +66,7 @@ The probability of a shared birthday rises steadily as group size increases. The
 
 
 #Question 2
+
 ```{r}
 data_df = "data/data/"
 
@@ -111,3 +112,33 @@ tidy_df |>
   )
 ```
 Particpants in the control arm begin with outcome measures between 0 and 2.5. Participants in the experimental arm begin with outcome measures around the same level between -1 and 3.75. Over time, participants in the control arm remain relatively steady with outcome measures that remain fairly constant. By Week 8, outcome measure remain between around 0 and 2.5. However, for the experimental arm, over time outcome measures increase steadily for all participants. By Week 8, outcome measure rise between 2.5 and 7.5.
+
+#Question 3
+
+```{r}
+t_test_df = function(mu, n = 30, sigma = 5) {
+  
+  test_data_df = tibble(
+    x = rnorm(n, mean = mu, sd = sigma)
+  )
+  test_data_df |>
+    pull(x) |>
+    t.test(mu = 0) |>
+    broom::tidy() |>
+    select(estimate, p.value)
+}
+```
+
+```{r}
+model_df =
+  expand_grid(
+    mu = 0:6,
+    iter = 1:5000
+  ) |>
+  mutate(
+    results_df = map(mu, t_test_df)
+  ) |>
+  unnest(results_df) |>
+  mutate(reject = p.value < 0.05)
+```
+
