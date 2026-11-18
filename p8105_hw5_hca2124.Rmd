@@ -21,10 +21,8 @@ length(unique(bdays)) < 25
 bday = function(n) {
   if (!is.numeric(n)) {
     stop("n must be numerical")
-  } else if (length(n) !=1) {
-    stop("n is a single number")
   } else if (n<2) {
-    stop("group has more than 2 ppl")
+    stop("group has at least 2 ppl")
   }
   
   bdays = sample (1:365, n, replace = TRUE)
@@ -35,5 +33,35 @@ bday = function(n) {
 bday(10)
 bday(50)
 ```
+
+```{r}
+bday_function_df =
+  expand.grid(
+    group_size = 2:50,
+    iter = 1:10000
+  ) |>
+  mutate(
+    shared = map_lgl(group_size, bday)
+  )
+
+prob_df =
+  bday_function_df |>
+  group_by(group_size) |>
+  summarise(prob_shared = mean(shared))
+```
+
+
+```{r}
+prob_df |>
+  ggplot(aes(x = group_size, y = prob_shared)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Probability of shared birthday",
+    x = "Group size",
+    y = "Probability of shared birthday"
+  )
+```
+The probability of a shared birthday rises steadily as group size increases. It reaches 50% probability at around a group size of 23 and increases to 96% probability at a group size of 48 and plateaus afterwards.
 
 
