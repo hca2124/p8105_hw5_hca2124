@@ -142,3 +142,29 @@ model_df =
   mutate(reject = p.value < 0.05)
 ```
 
+## Plot for true value of mu vs rejection of null proportions
+```{r}
+rejection_df =
+  model_df |>
+  group_by(mu) |>
+  summarise(power = mean(reject))
+
+rejection_df |>
+  ggplot(aes(x = mu, y = power)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "True Value of Mu vs Power",
+    x = "True Value of Mu",
+    y = "Proportion of times the null was rejected (Power)"
+  )
+```
+
+At an effect size of 0, the power equals about 0.05. The curve continues to rise steadily, showing that as the true value of mu (effect size) increases, the proportion of times the null is rejected (power) increases. The curve then levels and plateaus at a true mu value of 4, with a power of 1, meaning the test almost always rejects the null after this point.
+
+
+
+
+
+
+
