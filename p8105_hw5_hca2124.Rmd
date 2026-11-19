@@ -162,9 +162,32 @@ rejection_df |>
 
 At an effect size of 0, the power equals about 0.05. The curve continues to rise steadily, showing that as the true value of mu (effect size) increases, the proportion of times the null is rejected (power) increases. The curve then levels and plateaus at a true mu value of 4, with a power of 1, meaning the test almost always rejects the null after this point.
 
+```{r}
+average_df = 
+  model_df |>
+  group_by(mu) |>
+  summarise(avg_estimate = mean(estimate)) |>
+  mutate(samples = "All samples")
 
+average_rejected_df =
+  model_df |>
+  filter(reject) |>
+  group_by(mu) |>
+  summarise(avg_estimate = mean(estimate)) |>
+    mutate(samples = "Rejected null")
 
-
+bind_rows(average_df, average_rejected_df) |>
+  ggplot(aes(x = mu, y = avg_estimate, color = samples)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "True Value of Mu x Average Estimate of Mu, for All Samples vs. Samples For Which the Null Was Rejected",
+    x = "True value of mu",
+    y = "Average estimate of mu",
+    color = "samples"
+  )
+```
+For mu= 1 and mu =2, the sample average of mu across tests for which the null is rejected is larger than that of the true value of mu. As mu increases, the sample average of mu across tests for which the null is rejected approximately equals to the true value of mu. This is seen at mu values of 4 and above. 
 
 
 
